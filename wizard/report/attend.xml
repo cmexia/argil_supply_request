@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<openerp>
+    <data>
+        <report id="attend_report" model="attend.supply.request" name="attend_report" rml="addons/argil_supply_request/wizard/report/attend_report.rml" string="reporte de resurtido" auto="False" header="False" menu="True"/>
+
+    </data>
+</openerp>
