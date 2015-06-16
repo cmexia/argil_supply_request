@@ -31,7 +31,7 @@ class attend_parser(report_sxw.rml_parse):
         })
 
 report_sxw.report_sxw('report.attend_report',
-                    'attend.supply.request',
+                    'attend.supply.request.line',
                     'addons/argil_supply_request/wizard/report/attend_report.rml',
                     parser=attend_parser, header=False)
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

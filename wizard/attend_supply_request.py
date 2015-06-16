@@ -26,7 +26,6 @@ from openerp.tools.misc import DEFAULT_SERVER_DATETIME_FORMAT
 from openerp.tools.float_utils import float_compare
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
-
 class attend_supply_request(osv.osv_memory):
     _name = "attend.supply.request"
     _columns = {
@@ -183,23 +182,34 @@ class attend_supply_request(osv.osv_memory):
 #               }
     
     def print_report(self, cr, uid, ids, context=None):
-        attend_obj = self.pool.get('attend.supply.request.line')
-        attend_ids = attend_obj.search(cr, uid,[
-                ('product_id','=',attend_obj.product_id),
-                ('supply_req_id','=',attend_obj.supply_req_id),
-                ('from_warehouse_id','=',attend_obj.from_warehouse_id)],
-                )
-        print "############# ATTEND IDS <<<<<<<<", attend_ids
+        for rec in self.browse(cr, SUPERUSER_ID,ids, context=context): # hacemos un browse a attend.supply.request para obtener el id del wizard = supply_request_line_ids
+            print "###################################### IDS ", rec.supply_request_line_ids
+        # NOS TRAEMOS LOS OBJETOS DE LAS LINEAS
+            tkt_obj = self.pool.get('attend.request.purchase.line')
+            # LE PASAMOS COMO ARGUMENTO EL ID DEL WIZARD(supply_request_line_ids)
+            tkt_br = self.browse(cr, uid, rec.supply_request_line_ids, context=None)[0]
+            print "#################################### Wiz_id", tkt_br.id.supply_req_id.id
+            print "#################################### NOMBRE",tkt_br.id.name
+            print "#################################### Almacen", tkt_br.id.from_warehouse_id.name
+            print "#################################### Cantidad requerida",tkt_br.id.qty_request
+            print "#################################### Fecha requerida",tkt_br.id.required_date
+            print "#################################### cantidad a mandar", tkt_br.id.qty_to_send
+                # for rec in tkt_obj:
 
-        report = {
-                'type':'ir.actions.report.xml',
-                'report_name':'attend_report',
-                'datas' : {
-                    'model' : 'attend.supply.request', 
-                    'ids'   : attend_ids,
-                    }
-                }
-        return report
+        if context is None:
+            context = {}
+        datas = self.read(cr, uid, ids)[-1]
+        datas = {
+                'ids': context.get('active_ids') and context.get('active_ids')[0] or False,
+                'ids': context.get('active_ids') and context.get('active_ids') or [],
+                'model': 'supply.request.line',
+                 }
+        # res = self.read(cr, uid, ids,['name','qty_request'], context=context)
+        return {
+            'type': 'ir.actions.report.xml',
+            'report_name': 'attend_report',
+            'datas': datas,
+            }
 attend_supply_request()
 
 class attend_supply_request_line(osv.osv_memory):
